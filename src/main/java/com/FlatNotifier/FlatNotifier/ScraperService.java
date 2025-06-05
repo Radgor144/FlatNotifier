@@ -1,10 +1,12 @@
 package com.FlatNotifier.FlatNotifier;
 
+
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -16,9 +18,13 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 @Slf4j
 @Service
 public class ScraperService {
+
+    @Value("${offerTimeLimit}")
+    private Integer offerTimeLimit;
 
     private static final String BASE_URL = "https://www.olx.pl";
     private static final String URL = BASE_URL + "/nieruchomosci/mieszkania/wynajem/krakow/?search%5Border%5D=created_at:desc";
@@ -73,7 +79,7 @@ public class ScraperService {
     }
 
     private boolean isOfferRecent(LocalTime offerTime, LocalTime now) {
-        return now.minusMinutes(15).isBefore(offerTime) && now.isAfter(offerTime);
+        return now.minusMinutes(offerTimeLimit).isBefore(offerTime) && now.isAfter(offerTime);
     }
 
     private String normalizeLink(String link) {
